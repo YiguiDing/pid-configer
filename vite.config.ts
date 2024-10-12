@@ -3,6 +3,11 @@ import path from "node:path";
 import electron from "vite-plugin-electron/simple";
 import vue from "@vitejs/plugin-vue";
 
+const alias = {
+  "@": path.resolve(__dirname, "./src"),
+  "#": path.resolve(__dirname, "./electron"),
+};
+
 // https://vitejs.dev/config/
 export default defineConfig({
   build: {
@@ -10,6 +15,7 @@ export default defineConfig({
       exclude: "serialport",
     },
   },
+  resolve: { alias },
   plugins: [
     vue({
       exclude: "serialport",

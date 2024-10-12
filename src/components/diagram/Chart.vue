@@ -3,12 +3,15 @@ import dayjs from "dayjs";
 import * as echarts from "echarts";
 import { onMounted, onBeforeUnmount, ref, toValue } from "vue";
 
+const { title } = defineProps<{ title: string }>();
+
 type DataItem = [Date, number];
 
 const time_table_ms: number[] = [];
 const curent_output: DataItem[] = [];
 const target_output: DataItem[] = [];
 const option: echarts.EChartsOption = {
+  title: { text: title },
   tooltip: {
     trigger: "axis",
     axisPointer: {
@@ -116,8 +119,6 @@ defineExpose({ update });
 </template>
 <style lang="less">
 .echart-wrapper {
-  min-width: 100px;
-  min-height: 250px;
   width: 100%;
   height: 100%;
 }
