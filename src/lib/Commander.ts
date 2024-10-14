@@ -1,8 +1,9 @@
 import { SimpleProtocalParser } from "./simple-protocal";
 import { Dragram } from "./type/Dragram";
 import { Duplex } from "node:stream";
+import { EventEmitter } from "node:events";
 
-export class Commander {
+export class Commander extends EventEmitter<{ write: [Buffer] }> {
   private ioStream: Duplex | null = null;
   private dragram: Dragram | null = null;
   private protocal = new SimpleProtocalParser();
@@ -30,8 +31,10 @@ export class Commander {
   private send(data: number[] | Buffer) {
     let frame = this.protocal.encoder(data);
     let buffer = Buffer.from(frame);
-    this.ioStream?.write(buffer);
-    console.log(buffer.toString("hex"));
+    if (this.ioStream) {
+      this.emit("write", buffer);
+      this.ioStream.write(buffer);
+    }
   }
 
   private onData(chunk: Buffer) {

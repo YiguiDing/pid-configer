@@ -37,7 +37,7 @@ defineExpose(<Dragram>{
   & > * {
     flex: 1;
     min-width: 300px;
-    max-height: 300px;
+    max-height: 250px;
     margin-right: 15px;
     margin-bottom: 15px;
     /* x 偏移量 | y 偏移量 | 阴影模糊半径 | 阴影扩散半径 | 阴影颜色 */

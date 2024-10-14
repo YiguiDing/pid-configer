@@ -26,35 +26,40 @@ onMounted(() => {
   <ElInput class="row" v-model.number="Kp">
     <template #prepend>Kp:</template>
     <template #append>
-      <ElSlider class="row" v-model.number="Kp" :min="0" :max="0xffff" />
+      <ElSlider class="row" v-model.number.lazy="Kp" :min="0" :max="0xffff" />
     </template>
   </ElInput>
 
   <ElInput class="row" v-model.number="Ki">
     <template #prepend>Ki:</template>
     <template #append>
-      <ElSlider class="row" v-model.number="Ki" :min="0" :max="0xffff" />
+      <ElSlider class="row" v-model.number.lazy="Ki" :min="0" :max="0xffff" />
     </template>
   </ElInput>
 
   <ElInput class="row" v-model.number="Kd">
     <template #prepend>Kd:</template>
     <template #append>
-      <ElSlider class="row" v-model.number="Kd" :min="0" :max="0xffff" />
+      <ElSlider class="row" v-model.number.lazy="Kd" :min="0" :max="0xffff" />
     </template>
   </ElInput>
 
   <ElInput class="row" type="number" v-model.number="limit">
     <template #prepend>limit:</template>
     <template #append>
-      <ElSlider class="row" v-model.number="limit" :min="0" :max="0xffff" />
+      <ElSlider
+        class="row"
+        v-model.number.lazy="limit"
+        :min="0"
+        :max="0xffff"
+      />
     </template>
   </ElInput>
 
   <ElInput class="row" type="number" v-model.number="roc">
     <template #prepend>roc:</template>
     <template #append>
-      <ElSlider class="row" v-model.number="roc" :min="0" :max="0xffff" />
+      <ElSlider class="row" v-model.number.lazy="roc" :min="0" :max="0xffff" />
     </template>
   </ElInput>
 
@@ -63,7 +68,7 @@ onMounted(() => {
     <template #append>
       <ElSlider
         class="row"
-        v-model.number="target"
+        v-model.number.lazy="target"
         :min="-0xffff"
         :max="0xffff"
       />

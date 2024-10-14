@@ -46,7 +46,7 @@ function edit(pane: TabPaneName | undefined, action: "add" | "remove") {
   channals.value = _chs;
 }
 
-defineExpose({ channals });
+defineExpose({ channals, commander: cmd });
 </script>
 
 <style scoped lang="less"></style>

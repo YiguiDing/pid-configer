@@ -18,14 +18,16 @@
         </ElRow>
       </ElAside>
       <ElMain class="content">
+        <Terminal
+          class="Terminal"
+          :stream="connectionManager?.stream || null"
+          :cmd="controllerManager?.commander || null"
+        />
         <DiagramManager
+          class="DiagramManager"
           ref="dragramManager"
           :channals="controllerManager?.channals || []"
         />
-        <!-- <ElRow> </ElRow> -->
-        <!-- <ElRow>
-          <Terminal :stream="connectionManager?.stream || null" />
-        </ElRow> -->
       </ElMain>
     </ElContainer>
   </ElContainer>
@@ -56,6 +58,18 @@ const dragramManager = ref<InstanceType<typeof DiagramManager>>();
   .content {
     width: 100%;
     height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    & > .Terminal {
+      width: 100%;
+      max-height: 50%;
+      margin-bottom: 15px;
+    }
+    & > .DiagramManager {
+      width: 100%;
+      height: fit-content;
+    }
   }
 }
 </style>
