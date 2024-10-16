@@ -90,13 +90,8 @@ function destory() {
   resizeObserver.disconnect();
   myChart = null;
 }
-function update(
-  target_val: number,
-  curent_val: number,
-  dt_ms: number,
-  T_ms: number
-) {
-  time_ms_now += dt_ms;
+function update(target_val: number, curent_val: number, T_ms: number) {
+  time_ms_now = dayjs().valueOf();
   time_table_ms.push(time_ms_now);
   curent_output.push([dayjs(time_ms_now).toDate(), +curent_val.toFixed(5)]);
   target_output.push([dayjs(time_ms_now).toDate(), +target_val.toFixed(5)]);

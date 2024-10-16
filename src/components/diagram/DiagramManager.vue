@@ -19,8 +19,8 @@ const props = defineProps<{ channals: Array<number> }>();
 const Charts = ref<{ [key in number]: InstanceType<typeof Chart> }>({});
 
 defineExpose(<Dragram>{
-  draw(channel, target, output, dt_ms) {
-    toValue(Charts)[channel]?.update(target, output, dt_ms, 1000);
+  draw(channel, target, output) {
+    toValue(Charts)[channel]?.update(target, output, 1000);
   },
 });
 </script>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, toValue, watchEffect, watch } from "vue";
+import { onMounted, ref, toValue, watch } from "vue";
 import { ElInput, ElSlider } from "element-plus";
 import { Commander } from "@/lib/Commander";
 
@@ -23,21 +23,21 @@ onMounted(() => {
 </script>
 
 <template>
-  <ElInput class="row" v-model.number="Kp">
+  <ElInput class="row" type="number" v-model.number="Kp">
     <template #prepend>Kp:</template>
     <template #append>
       <ElSlider class="row" v-model.number.lazy="Kp" :min="0" :max="0xffff" />
     </template>
   </ElInput>
 
-  <ElInput class="row" v-model.number="Ki">
+  <ElInput class="row" type="number" v-model.number="Ki">
     <template #prepend>Ki:</template>
     <template #append>
       <ElSlider class="row" v-model.number.lazy="Ki" :min="0" :max="0xffff" />
     </template>
   </ElInput>
 
-  <ElInput class="row" v-model.number="Kd">
+  <ElInput class="row" type="number" v-model.number="Kd">
     <template #prepend>Kd:</template>
     <template #append>
       <ElSlider class="row" v-model.number.lazy="Kd" :min="0" :max="0xffff" />

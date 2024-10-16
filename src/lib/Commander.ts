@@ -75,48 +75,48 @@ export class Commander extends EventEmitter<{ write: [Buffer] }> {
     }
   }
   public setKp(ch: number, Kp: number) {
-    let buffer = Buffer.alloc(4);
+    let buffer = Buffer.alloc(6);
     let view = new DataView(buffer.buffer);
     view.setUint8(0, this.CMD.SetKp);
     view.setUint8(1, ch);
-    view.setUint16(2, Kp);
+    view.setFloat32(2, Kp);
     this.send(buffer);
   }
   public handleSetKp(buffer: Buffer) {
-    if (buffer.length < 3) return;
+    if (buffer.length < 5) return;
     let view = new DataView(buffer.buffer);
     let ch = view.getUint8(0);
-    let kp = view.getUint16(1);
+    let kp = view.getFloat32(1);
     console.log("handleSetKp", ch, kp);
   }
   public setKi(ch: number, Ki: number) {
-    let buffer = Buffer.alloc(4);
+    let buffer = Buffer.alloc(6);
     let view = new DataView(buffer.buffer);
     view.setUint8(0, this.CMD.SetKi);
     view.setUint8(1, ch);
-    view.setUint16(2, Ki);
+    view.setFloat32(2, Ki);
     this.send(buffer);
   }
   public handleSetKi(buffer: Buffer) {
-    if (buffer.length < 3) return;
+    if (buffer.length < 5) return;
     let view = new DataView(buffer.buffer);
     let ch = view.getUint8(0);
-    let ki = view.getUint16(1);
+    let ki = view.getFloat32(1);
     console.log("handleSetKi", ch, ki);
   }
   public setKd(ch: number, Ki: number) {
-    let buffer = Buffer.alloc(4);
+    let buffer = Buffer.alloc(6);
     let view = new DataView(buffer.buffer);
     view.setUint8(0, this.CMD.SetKd);
     view.setUint8(1, ch);
-    view.setUint16(2, Ki);
+    view.setFloat32(2, Ki);
     this.send(buffer);
   }
   public handleSetKd(buffer: Buffer) {
-    if (buffer.length < 3) return;
+    if (buffer.length < 5) return;
     let view = new DataView(buffer.buffer);
     let ch = view.getUint8(0);
-    let kd = view.getUint16(1);
+    let kd = view.getFloat32(1);
     console.log("handleSetKd", ch, kd);
   }
   public setOutputLimit(ch: number, limit: number) {
@@ -168,25 +168,22 @@ export class Commander extends EventEmitter<{ write: [Buffer] }> {
     ch: number,
     target: number,
     curent: number,
-    dt_ms: number
   ) {
-    let buffer = Buffer.alloc(14);
+    let buffer = Buffer.alloc(10);
     let view = new DataView(buffer.buffer);
     view.setUint8(0, this.CMD.DrawDragram);
     view.setUint8(1, ch);
     view.setFloat32(2, target);
     view.setFloat32(6, curent);
-    view.setFloat32(10, dt_ms);
     this.send(buffer);
   }
   private handleDrawDragram(buffer: Buffer) {
-    if (buffer.length < 14) return;
+    if (buffer.length < 9) return;
     let view = new DataView(buffer.buffer);
     let ch = view.getUint8(0);
-    let target = view.getFloat32(1);
-    let curent = view.getFloat32(5);
-    let dt_ms = view.getFloat32(9);
-    console.log("handleDrawDragram", ch, target, curent, dt_ms);
-    this.dragram?.draw(ch, target, curent, dt_ms);
+    let target = view.getFloat32(1 + 0);
+    let curent = view.getFloat32(1 + 4);
+    console.log("handleDrawDragram", ch, target, curent);
+    this.dragram?.draw(ch, target, curent);
   }
 }
