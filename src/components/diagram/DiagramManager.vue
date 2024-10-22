@@ -20,7 +20,7 @@ const Charts = ref<{ [key in number]: InstanceType<typeof Chart> }>({});
 
 defineExpose(<Dragram>{
   draw(channel, target, output) {
-    toValue(Charts)[channel]?.update(target, output, 1000);
+    toValue(Charts)[channel]?.update(target, output);
   },
 });
 </script>

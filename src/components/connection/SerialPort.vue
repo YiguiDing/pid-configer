@@ -53,6 +53,7 @@ function connect() {
 
 function disconnect() {
   serialPort.value?.close();
+  serialPort.value?.destroy();
   serialPort.value = null;
   isConnected.value = false;
 }

@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import dayjs from "dayjs";
 import * as echarts from "echarts";
+import { ElInputNumber } from "element-plus";
 import { onMounted, onBeforeUnmount, ref, toValue } from "vue";
 
 const { title } = defineProps<{ title: string }>();
+const T_ms = ref(5000);
 
 type DataItem = [Date, number];
 
@@ -90,12 +92,12 @@ function destory() {
   resizeObserver.disconnect();
   myChart = null;
 }
-function update(target_val: number, curent_val: number, T_ms: number) {
-  time_ms_now = dayjs().valueOf();
-  time_table_ms.push(time_ms_now);
-  curent_output.push([dayjs(time_ms_now).toDate(), +curent_val.toFixed(5)]);
-  target_output.push([dayjs(time_ms_now).toDate(), +target_val.toFixed(5)]);
-  while (!!time_table_ms[0] && time_table_ms[0] < time_ms_now - T_ms) {
+function update(target_val: number, curent_val: number) {
+  let now = dayjs().valueOf();
+  time_table_ms.push(now);
+  curent_output.push([dayjs(now).toDate(), +curent_val.toFixed(5)]);
+  target_output.push([dayjs(now).toDate(), +target_val.toFixed(5)]);
+  while (!!time_table_ms[0] && time_table_ms[0] < now - toValue(T_ms)) {
     time_table_ms.shift();
     curent_output.shift();
     target_output.shift();
@@ -110,11 +112,39 @@ onBeforeUnmount(destory);
 defineExpose({ update });
 </script>
 <template>
-  <div class="echart-wrapper" ref="chartWrapper"></div>
+  <div class="echart-wrapper">
+    <div class="chart" ref="chartWrapper" />
+    <ElInputNumber
+      v-model="T_ms"
+      class="input"
+      size="small"
+      controls-position="right"
+      :min="1"
+      :max="30000"
+    >
+      <template #prefix>
+        <span>T</span>
+      </template>
+      <template #suffix>
+        <span>ms</span>
+      </template>
+    </ElInputNumber>
+  </div>
 </template>
 <style lang="less">
 .echart-wrapper {
   width: 100%;
   height: 100%;
+  position: relative;
+  .chart {
+    width: 100%;
+    height: 100%;
+  }
+  .input {
+    position: absolute;
+    width: 150px;
+    right: 5px;
+    bottom: 5px;
+  }
 }
 </style>

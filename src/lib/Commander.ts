@@ -3,7 +3,10 @@ import { Dragram } from "./type/Dragram";
 import { Duplex } from "node:stream";
 import { EventEmitter } from "node:events";
 
-export class Commander extends EventEmitter<{ write: [Buffer] }> {
+export class Commander extends EventEmitter<{
+  write: [Buffer];
+  data: [Buffer];
+}> {
   private ioStream: Duplex | null = null;
   private dragram: Dragram | null = null;
   private protocal = new SimpleProtocalParser();
@@ -16,6 +19,7 @@ export class Commander extends EventEmitter<{ write: [Buffer] }> {
     SetTarget: 6,
     DrawDragram: 7,
   });
+  littleEndin = true;
   listener: any;
   public connectStream(ioStream: Duplex | null) {
     if (!this.listener) this.listener = this.onData.bind(this);
@@ -39,151 +43,202 @@ export class Commander extends EventEmitter<{ write: [Buffer] }> {
 
   private onData(chunk: Buffer) {
     for (let byte of chunk) {
-      let command = this.protocal.decoder(byte);
-      if (command) this.exec(command);
+      let data = this.protocal.decoder(byte);
+      if (data) this.process(data);
     }
   }
 
-  private exec(command: number[]) {
-    const cmd_code = command[0];
-    const buffer = Buffer.from(command.slice(1));
-
-    switch (cmd_code) {
+  private process(data: number[]) {
+    const cmd = data[0];
+    const args = Buffer.from(data.slice(1));
+    switch (cmd) {
       case this.CMD.SetKp:
-        this.handleSetKp(buffer);
+        this.handleSetKp(args);
         break;
       case this.CMD.SetKi:
-        this.handleSetKi(buffer);
+        this.handleSetKi(args);
         break;
       case this.CMD.SetKd:
-        this.handleSetKd(buffer);
+        this.handleSetKd(args);
         break;
       case this.CMD.SetOutputLimit:
-        this.handleSetOutputLimit(buffer);
+        this.handleSetOutputLimit(args);
         break;
       case this.CMD.SetOutputROC:
-        this.handleSetOutputROC(buffer);
+        this.handleSetOutputROC(args);
         break;
       case this.CMD.SetTarget:
-        this.handleSetTarget(buffer);
+        this.handleSetTarget(args);
         break;
       case this.CMD.DrawDragram:
-        this.handleDrawDragram(buffer);
+        this.handleDrawDragram(args);
         break;
       default:
-        console.warn("Unknown command code:", cmd_code);
+        console.warn("Unknown command code:", cmd);
     }
   }
   public setKp(ch: number, Kp: number) {
     let buffer = Buffer.alloc(6);
-    let view = new DataView(buffer.buffer);
+    let view = new DataView(
+      buffer.buffer,
+      buffer.byteOffset,
+      buffer.byteLength
+    );
     view.setUint8(0, this.CMD.SetKp);
     view.setUint8(1, ch);
-    view.setFloat32(2, Kp);
+    view.setFloat32(2, Kp, this.littleEndin);
     this.send(buffer);
   }
   public handleSetKp(buffer: Buffer) {
     if (buffer.length < 5) return;
-    let view = new DataView(buffer.buffer);
+    let view = new DataView(
+      buffer.buffer,
+      buffer.byteOffset,
+      buffer.byteLength
+    );
     let ch = view.getUint8(0);
-    let kp = view.getFloat32(1);
+    let kp = view.getFloat32(1, this.littleEndin);
     console.log("handleSetKp", ch, kp);
   }
   public setKi(ch: number, Ki: number) {
     let buffer = Buffer.alloc(6);
-    let view = new DataView(buffer.buffer);
+    let view = new DataView(
+      buffer.buffer,
+      buffer.byteOffset,
+      buffer.byteLength
+    );
     view.setUint8(0, this.CMD.SetKi);
     view.setUint8(1, ch);
-    view.setFloat32(2, Ki);
+    view.setFloat32(2, Ki, this.littleEndin);
     this.send(buffer);
   }
   public handleSetKi(buffer: Buffer) {
     if (buffer.length < 5) return;
-    let view = new DataView(buffer.buffer);
+    let view = new DataView(
+      buffer.buffer,
+      buffer.byteOffset,
+      buffer.byteLength
+    );
     let ch = view.getUint8(0);
-    let ki = view.getFloat32(1);
+    let ki = view.getFloat32(1, this.littleEndin);
     console.log("handleSetKi", ch, ki);
   }
   public setKd(ch: number, Ki: number) {
     let buffer = Buffer.alloc(6);
-    let view = new DataView(buffer.buffer);
+    let view = new DataView(
+      buffer.buffer,
+      buffer.byteOffset,
+      buffer.byteLength
+    );
     view.setUint8(0, this.CMD.SetKd);
     view.setUint8(1, ch);
-    view.setFloat32(2, Ki);
+    view.setFloat32(2, Ki, this.littleEndin);
     this.send(buffer);
   }
   public handleSetKd(buffer: Buffer) {
     if (buffer.length < 5) return;
-    let view = new DataView(buffer.buffer);
+    let view = new DataView(
+      buffer.buffer,
+      buffer.byteOffset,
+      buffer.byteLength
+    );
     let ch = view.getUint8(0);
-    let kd = view.getFloat32(1);
+    let kd = view.getFloat32(1, this.littleEndin);
     console.log("handleSetKd", ch, kd);
   }
   public setOutputLimit(ch: number, limit: number) {
     let buffer = Buffer.alloc(6);
-    let view = new DataView(buffer.buffer);
+    let view = new DataView(
+      buffer.buffer,
+      buffer.byteOffset,
+      buffer.byteLength
+    );
     view.setUint8(0, this.CMD.SetOutputLimit);
     view.setUint8(1, ch);
-    view.setFloat32(2, limit);
+    view.setFloat32(2, limit, this.littleEndin);
     this.send(buffer);
   }
   public handleSetOutputLimit(buffer: Buffer) {
     if (buffer.length < 5) return;
-    let view = new DataView(buffer.buffer);
+    let view = new DataView(
+      buffer.buffer,
+      buffer.byteOffset,
+      buffer.byteLength
+    );
     let ch = view.getUint8(0);
-    let outputLimit = view.getFloat32(1);
+    let outputLimit = view.getFloat32(1, this.littleEndin);
     console.log("handleSetOutputLimit", ch, outputLimit);
   }
   public setOutputROC(ch: number, outputROC: number) {
     let buffer = Buffer.alloc(6);
-    let view = new DataView(buffer.buffer);
+    let view = new DataView(
+      buffer.buffer,
+      buffer.byteOffset,
+      buffer.byteLength
+    );
     view.setUint8(0, this.CMD.SetOutputROC);
     view.setUint8(1, ch);
-    view.setFloat32(2, outputROC);
+    view.setFloat32(2, outputROC, this.littleEndin);
     this.send(buffer);
   }
   public handleSetOutputROC(buffer: Buffer) {
     if (buffer.length < 5) return;
-    let view = new DataView(buffer.buffer);
+    let view = new DataView(
+      buffer.buffer,
+      buffer.byteOffset,
+      buffer.byteLength
+    );
     let ch = view.getUint8(0);
-    let outputROC = view.getFloat32(1);
+    let outputROC = view.getFloat32(1, this.littleEndin);
     console.log("handleSetOutputROC", ch, outputROC);
   }
   public setTarget(ch: number, target: number) {
     let buffer = Buffer.alloc(6);
-    let view = new DataView(buffer.buffer);
+    let view = new DataView(
+      buffer.buffer,
+      buffer.byteOffset,
+      buffer.byteLength
+    );
     view.setUint8(0, this.CMD.SetTarget);
     view.setUint8(1, ch);
-    view.setFloat32(2, target);
+    view.setFloat32(2, target, this.littleEndin);
     this.send(buffer);
   }
   public handleSetTarget(buffer: Buffer) {
     if (buffer.length < 5) return;
-    let view = new DataView(buffer.buffer);
+    let view = new DataView(
+      buffer.buffer,
+      buffer.byteOffset,
+      buffer.byteLength
+    );
     let ch = view.getUint8(0);
-    let target = view.getFloat32(1);
+    let target = view.getFloat32(1, this.littleEndin);
     console.log("handleSetTarget", ch, target);
   }
-  public DrawDragram(
-    ch: number,
-    target: number,
-    curent: number,
-  ) {
+  public DrawDragram(ch: number, target: number, curent: number) {
     let buffer = Buffer.alloc(10);
-    let view = new DataView(buffer.buffer);
+    let view = new DataView(
+      buffer.buffer,
+      buffer.byteOffset,
+      buffer.byteLength
+    );
     view.setUint8(0, this.CMD.DrawDragram);
     view.setUint8(1, ch);
-    view.setFloat32(2, target);
-    view.setFloat32(6, curent);
+    view.setFloat32(2, target, this.littleEndin);
+    view.setFloat32(6, curent, this.littleEndin);
     this.send(buffer);
   }
   private handleDrawDragram(buffer: Buffer) {
     if (buffer.length < 9) return;
-    let view = new DataView(buffer.buffer);
+    let view = new DataView(
+      buffer.buffer,
+      buffer.byteOffset,
+      buffer.byteLength
+    );
     let ch = view.getUint8(0);
-    let target = view.getFloat32(1 + 0);
-    let curent = view.getFloat32(1 + 4);
-    console.log("handleDrawDragram", ch, target, curent);
+    let target = view.getFloat32(1, this.littleEndin);
+    let curent = view.getFloat32(5, this.littleEndin);
+    // console.log("handleDrawDragram:", ch, target, curent);
     this.dragram?.draw(ch, target, curent);
   }
 }

@@ -14,11 +14,11 @@ const roc = ref(0);
 
 onMounted(() => {
   watch(Kp, () => props.cmd.setKp(props.ch, toValue(Kp)));
-  watch(Ki, () => props.cmd.setKp(props.ch, toValue(Ki)));
-  watch(Kd, () => props.cmd.setKp(props.ch, toValue(Kd)));
-  watch(limit, () => props.cmd.setKp(props.ch, toValue(limit)));
-  watch(roc, () => props.cmd.setKp(props.ch, toValue(roc)));
-  watch(target, () => props.cmd.setKp(props.ch, toValue(target)));
+  watch(Ki, () => props.cmd.setKi(props.ch, toValue(Ki)));
+  watch(Kd, () => props.cmd.setKd(props.ch, toValue(Kd)));
+  watch(limit, () => props.cmd.setOutputLimit(props.ch, toValue(limit)));
+  watch(roc, () => props.cmd.setOutputROC(props.ch, toValue(roc)));
+  watch(target, () => props.cmd.setTarget(props.ch, toValue(target)));
 });
 </script>
 
