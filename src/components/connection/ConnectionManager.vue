@@ -1,28 +1,37 @@
 <template>
-  <ElTabs v-model="activeName" class="tab-wrapper" type="border-card">
-    <ElTabPane v-for="key of Object.keys(view)" :name="key" :label="key">
-      <!-- @vue-ignore -->
-      <component :is="view[key]" :ref="(el) => (connections[key] = el)" />
+  <ElTabs
+    v-model="connectionManager.activeName"
+    class="tab-wrapper"
+    type="border-card"
+    @tab-change="(key)=>connectionManager.active(key)"
+  >
+    <ElTabPane
+      v-for="connection,key in connectionManager.connections"
+      :name="key"
+      :label="connection.name"
+    >
+      <SerialPortView
+        v-if="(connection instanceof SerialPortConnection)"
+        :connection="connection"
+      />
+      <TCPClientView
+        v-else-if="(connection instanceof TCPClientConnection)"
+        :connection="connection"
+      />
     </ElTabPane>
   </ElTabs>
 </template>
 <script lang="ts" setup>
-import { computed, ref } from "vue";
+import { reactive } from "vue";
 import { ElTabs, ElTabPane } from "element-plus";
-import SerialPort from "./SerialPort.vue";
-import TCPClient from "./TCPClient.vue";
-import UDPClient from "./UDPClient.vue";
-const view = { SerialPort, TCPClient, UDPClient };
-const activeName = ref("SerialPort");
-type Map = {
-  [key in string]:
-    | InstanceType<typeof SerialPort>
-    | InstanceType<typeof TCPClient>;
-};
-const connections = ref<Map>({});
-defineExpose({
-  stream: computed(() => connections.value[activeName.value].stream),
-});
+import { ConnectionManager } from "./src/connectionManager";
+import SerialPortView from "./SerialPort.vue";
+import TCPClientView from "./TCPClient.vue";
+import UDPClientView from "./UDPClient.vue";
+import { SerialPortConnection } from "./src/SerialPort";
+import { TCPClientConnection } from "./src/TCPClient";
+const connectionManager = reactive(new ConnectionManager());
+defineExpose({ connetion: connectionManager.getActived() });
 </script>
 <style lang="less" scoped>
 .tab-wrapper {

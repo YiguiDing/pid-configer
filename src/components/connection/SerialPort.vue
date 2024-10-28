@@ -1,65 +1,44 @@
 <template>
   <div class="row">
-    <ElSelect v-model="path" @focus="list">
+    <ElSelect v-model="connection.path" @focus="connection.list()">
       <ElOption
-        v-for="port in ports"
-        :value="port.path"
-        :label="port.device_name"
+        v-for="item in connection.paths"
+        :value="item.path"
+        :label="item.device_name"
       />
     </ElSelect>
   </div>
   <div class="row">
-    <ElSelect v-model="baudRate">
-      <ElOption v-for="rate in baudRates" :value="rate" :label="rate" />
+    <ElSelect v-model="connection.baudRate">
+      <ElOption
+        v-for="item in connection.baudRates"
+        :value="item"
+        :label="item"
+      />
     </ElSelect>
   </div>
   <div class="row">
     <ElButton
-      v-if="!isConnected"
-      @click="connect"
+      v-if="!connection.isConnect()"
+      @click="connection.connect()"
       type="primary"
       v-text="'connect'"
     />
-    <ElButton v-else @click="disconnect" type="danger" v-text="'disconnect'" />
+    <ElButton
+      v-else
+      @click="connection.disonnect()"
+      type="danger"
+      v-text="'disconnect'"
+    />
   </div>
 </template>
 <script lang="ts" setup>
-import { onUnmounted, ref, toValue, defineExpose } from "vue";
+import { onUnmounted, defineExpose, defineProps } from "vue";
 import { ElButton, ElOption, ElSelect } from "element-plus";
-import type { SerialPort as ISerialPort } from "serialport";
-const SerialPort = require("serialport").SerialPort as typeof ISerialPort;
-
-const baudRates = [
-  300, 600, 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200,
-];
-const baudRate = ref<number>(9600);
-const ports = ref<{ path: string; device_name: string }[]>();
-const path = ref<string>("");
-let serialPort = ref<ISerialPort | null>(null);
-let isConnected = ref(false);
-
-async function list() {
-  ports.value = await SerialPort.list();
-}
-
-function connect() {
-  if (!toValue(path) && !toValue(baudRate)) return;
-  serialPort.value = new SerialPort({
-    path: toValue(path),
-    baudRate: toValue(baudRate),
-  });
-  isConnected.value = true;
-}
-
-function disconnect() {
-  serialPort.value?.close();
-  serialPort.value?.destroy();
-  serialPort.value = null;
-  isConnected.value = false;
-}
-
-onUnmounted(disconnect);
-defineExpose({ stream: serialPort });
+import { SerialPortConnection } from "./src/SerialPort";
+const { connection } = defineProps<{ connection: SerialPortConnection }>();
+onUnmounted(() => connection.disonnect());
+defineExpose({ connection });
 </script>
 <style lang="less" scoped>
 .row {
